@@ -218,7 +218,7 @@ kiro /path/to/your/project
 
 > **Note**: Version and size information below reflects the current package. Check the [flake.nix](./flake.nix) file for the most up-to-date details.
 
-- **Version**: 0.5.0
+- **Version**: 0.8.86
 - **Size**: ~720MB extracted
 - **Platform**: x86_64-linux only
 - **License**: AWS-IPL (unfree)
