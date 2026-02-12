@@ -14,7 +14,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 log_info() {
-    echo -e "${GREEN}[INFO]${NC} $1"
+    echo -e "${GREEN}[INFO]${NC} $1" >&2
 }
 
 log_error() {
@@ -56,7 +56,7 @@ get_latest_version() {
 # Extract download URL from metadata
 get_download_url() {
     local metadata="$1"
-    echo "$metadata" | jq -r '.releases[0].updateTo | select(.url | contains(".tar.gz")) | .url'
+    echo "$metadata" | jq -r '.releases[].updateTo | select(.url | contains(".tar.gz")) | .url'
 }
 
 # Get current version from flake.nix
