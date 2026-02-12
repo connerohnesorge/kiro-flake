@@ -28,8 +28,8 @@
       # Platform-specific release URLs and hashes
       releaseConfig = {
         "x86_64-linux" = {
-          url = "https://prod.download.desktop.kiro.dev/releases/stable/linux-x64/signed/0.8.86/tar/kiro-ide-0.8.86-stable-linux-x64.tar.gz";
-          hash = "sha256-Qa8Yy6pHDk2id9749HY068sEulhIV1CcQYjo3P7XRNg=";
+          url = "https://prod.download.desktop.kiro.dev/releases/stable/linux-x64/signed/0.9.2/tar/kiro-ide-0.9.2-stable-linux-x64.tar.gz";
+          hash = "sha256-/dMABkSiselaWuLQOnxB4dCt0VnLMzKn2LkKMLSG9MM=";
           platform = "linux";
           enabled = true;
         };
@@ -95,7 +95,7 @@
       packages = if !isSupported then {} else {
         kiro-desktop = pkgs.stdenv.mkDerivation rec {
           pname = "kiro-desktop";
-          version = "0.8.86";
+          version = "0.9.2";
 
           # Platform-specific source
           src = pkgs.fetchurl {
@@ -129,6 +129,8 @@
               # Core graphics stack
               glib
               gtk3
+              webkitgtk_4_1
+              libsoup_3
               cairo
               pango
               atk
