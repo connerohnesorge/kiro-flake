@@ -153,7 +153,8 @@
 
               # Hardware and system integration
               cups
-              mesa # for libgbm
+              mesa # for OpenGL
+              libgbm # for GBM (Generic Buffer Management)
               systemd # for libudev
               alsa-lib
               dbus
@@ -229,22 +230,25 @@
           '' else throw "Unsupported platform: ${currentRelease.platform}";
 
           # Manual patching for .node files that autoPatchelfHook might miss
-          preFixup = if currentRelease.platform == "linux" then ''
-            # Patch all native Node.js addons
-            find $out/lib/kiro/resources -name '*.node' -exec \
-              patchelf --set-rpath "${pkgs.lib.makeLibraryPath buildInputs}:$out/lib/kiro" {} \;
-          '' else if currentRelease.platform == "darwin" then ''
-            # macOS: nothing to patch in preFixup
-            # DYLD paths are handled in wrapper and at runtime
-          '' else "";
+           preFixup = if currentRelease.platform == "linux" then ''
+             # Patch main binary with library paths
+             patchelf --set-rpath "${pkgs.lib.makeLibraryPath buildInputs}:$out/lib/kiro" $out/lib/kiro/kiro
+             
+             # Patch all native Node.js addons
+             find $out/lib/kiro/resources -name '*.node' -exec \
+               patchelf --set-rpath "${pkgs.lib.makeLibraryPath buildInputs}:$out/lib/kiro" {} \;
+           '' else if currentRelease.platform == "darwin" then ''
+             # macOS: nothing to patch in preFixup
+             # DYLD paths are handled in wrapper and at runtime
+           '' else "";
 
           # Create wrapper script and install files
-          postFixup = if currentRelease.platform == "linux" then ''
-            # Create wrapper at $out/bin/kiro (Linux)
-            makeWrapper $out/lib/kiro/kiro $out/bin/kiro \
-              --prefix LD_LIBRARY_PATH : "$out/lib/kiro" \
-              --set ELECTRON_RUN_AS_NODE 1 \
-              --add-flags "$out/lib/kiro/resources/app/out/cli.js"
+           postFixup = if currentRelease.platform == "linux" then ''
+             # Create wrapper at $out/bin/kiro (Linux)
+             makeWrapper $out/lib/kiro/kiro $out/bin/kiro \
+               --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath buildInputs}:$out/lib/kiro" \
+               --set ELECTRON_RUN_AS_NODE 1 \
+               --add-flags "$out/lib/kiro/resources/app/out/cli.js"
 
             # Install desktop entry
             mkdir -p $out/share/applications
